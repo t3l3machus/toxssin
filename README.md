@@ -14,7 +14,7 @@ You can issue self-signed certificates with the following command:
 openssl req -x509 -newkey rsa:2048 -keyout key.pem -out cert.pem -days 365
 ```
 
-It is strongly recommended to start the toxssin server with a trusted certificate (see [How to get a Valid Certificate](#How-to-get-a-Valid-Certificate) in this document.)
+It is strongly recommended to start the toxssin server with a trusted certificate (see [How to get a Valid Certificate](#How-to-get-a-Valid-Certificate) in this document).
 
 ## Requirements
 As you probably know, there are 3 major obstacles when it comes to Cross-Site Scripting attacks attempting to include external JS scripts:
