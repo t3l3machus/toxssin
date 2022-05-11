@@ -31,6 +31,7 @@ First, you need to own a domain name. The fastest and most economic way to get o
 After you purchase a domain name, you can use certbot (Let's Encrypt) to get a trusted certificate in 5 minutes or less:
 1. Append an A record to your Domain's DNS settings so that it points to your server ip,
 2. Follow certbots [official instructions](https://certbot.eff.org/instructions).  
-*Tip*: Don't install and run certbot on your own, you might get unexpected errors. Stick with the instructions.
+
+**Tip**: Don't install and run certbot on your own, you might get unexpected errors. Stick with the instructions.
 
 ## Installation 
