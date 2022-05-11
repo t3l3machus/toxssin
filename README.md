@@ -3,6 +3,18 @@
 Toxssin is a tool for exploiting XSS vulnerabilities, consisting of a python server (toxssin.py) and its coresponding malicious JavaScript payload (toxin.js).
 Toxssin is a project that aims to assist the exploitation of XSS vulnerabilities 
 
+## Installation
+`
+git clone https://github.com/t3l3machus/toxssin.git
+`
+You will need to supply 
+
+You can issue self-signed certificates with the following command:  
+`
+openssl req -x509 -newkey rsa:2048 -keyout key.pem -out cert.pem -days 365
+`
+It is strongly recommended to start the toxssin server with a trusted certificate (see [How to get a Valid Certificate](#How-to-get-a-Valid-Certificate) in this document.)
+
 ## Requirements
 As you probably know, there are 3 major obstacles when it comes to Cross-Site Scripting attacks attempting to include external JS scripts:
 1. the "Mixed Content" (browser) error, which can be resolved by serving the JavaScript payload via https (even with a self-signed certificate),
