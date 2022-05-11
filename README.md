@@ -6,11 +6,11 @@ Toxssin is a project that aims to assist the exploitation of XSS vulnerabilities
 ## Installation
 ```
 git clone https://github.com/t3l3machus/toxssin.git
-````
+```  
 You will need to supply 
 
 You can issue self-signed certificates with the following command:  
-````
+```
 openssl req -x509 -newkey rsa:2048 -keyout key.pem -out cert.pem -days 365
 ```
 
