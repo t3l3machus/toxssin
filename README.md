@@ -26,7 +26,7 @@ Securing cookies with httponly and secure flags
 In order to succesfully execute toxin.js 
 
 ## How to get a Valid Certificate
-First you need to own a domain. The fastest and cheapest way to get one (im my knowledge) is through https://www.namecheap.com/domains/
+First, you need to own a domain name. The fastest and cheapest way to get one (im my knowledge) is through https://www.namecheap.com/domains/
 Search for a random string domain name (e.g. "fvcm98duf") and check the less popular TLDs like .xyz as they will probably cost 1$ - 3$ for a year.
 
 After you get a domain name you can use certbot (Let's Encrypt) to get a trusted certificate in 5 minutes:
