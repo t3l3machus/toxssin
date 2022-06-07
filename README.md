@@ -1,4 +1,5 @@
-# toxssin
+# toxssin  
+[![Python 3.x](https://img.shields.io/badge/python-3.x-yellow.svg)](https://www.python.org/) ![JavaScript](https://img.shields.io/badge/-JavaScript-blue) [![License](https://img.shields.io/badge/license-MIT-red.svg)](https://github.com/t3l3machus/toxssin/blob/main/LICENSE.md)
 ## Purpose
 Toxssin is a tool for exploiting XSS vulnerabilities, consisting of a python server (toxssin.py) and its coresponding malicious JavaScript payload (toxin.js).
 Toxssin is a project that aims to assist the exploitation of XSS vulnerabilities 
