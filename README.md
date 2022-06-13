@@ -12,7 +12,7 @@ https://www.youtube.com/watch?v=i9osyuFK6ro
 
 ## Capabilities  
 By default, toxssin intercepts:
-- cookies,
+- cookies (if HttpOnly not present),
 - keystrokes,
 - paste events,
 - input change events,
@@ -52,8 +52,6 @@ In my experience, there are 3 major obstacles when it comes to Cross-Site Script
 
 **Note**: The "Mixed Content" error can of course occur when the target website is hosted via http and the JavaScript payload via https. This limits the scope of toxssin to https only webistes, as (by default) toxssin is started with ssl only.
 
-Securing cookies with httponly and secure flags
-In order to succesfully execute toxin.js 
 
 ## How to get a Valid Certificate
 First, you need to own a domain name. The fastest and most economic way to get one (in my knowledge) is via a cheap domain registrar service (e.g.  https://www.namecheap.com/). Search for a random string domain name (e.g. "fvcm98duf") and check the less popular TLDs, like .xyz, as they will probably cost around 3$ per year.
