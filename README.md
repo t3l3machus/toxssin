@@ -39,7 +39,7 @@ If you don't own a domain with a trusted certificate, you can issue self-signed 
 openssl req -x509 -newkey rsa:2048 -keyout key.pem -out cert.pem -days 365
 ```
 
-It is strongly recommended to start the toxssin server with a trusted certificate (see [How to get a Valid Certificate](#How-to-get-a-Valid-Certificate) in this document). That said, you can start the toxssin server like this:
+It is strongly recommended to run toxssin with a trusted certificate (see [How to get a Valid Certificate](#How-to-get-a-Valid-Certificate) in this document). That said, you can start the toxssin server like this:
 ```
 # python3 toxssin.py -u https://your.domain.com -c /your/certificate.pem -k /your/privkey.pem
 ```
