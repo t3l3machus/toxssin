@@ -34,7 +34,7 @@ pip3 install -r requirements
 ```  
 To start toxssin.py, you will need to supply ssl certificate and private key files.
 
-If you don't own a domain with a trusted certificate, you can issue self-signed certificates with the following command (although this won't take you far):  
+If you don't own a domain with a trusted certificate, you can issue and use self-signed certificates with the following command (although this won't take you far):  
 ```
 openssl req -x509 -newkey rsa:2048 -keyout key.pem -out cert.pem -days 365
 ```
