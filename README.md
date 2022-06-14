@@ -26,7 +26,7 @@ Most importantly, toxssin:
 - supports session management, meaning that, you can use it to exploit reflected as well as stored XSS,
 - automatically logs every session.
 
-## Installation & Configuration
+## Installation & Usage
 ```
 git clone https://github.com/t3l3machus/toxssin
 cd ./toxssin
