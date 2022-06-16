@@ -10,6 +10,8 @@ The project is quite fresh and has not been widely tested.
 ### Video Presentation  
 https://www.youtube.com/watch?v=i9osyuFK6ro
 
+## Screenshots
+![usage_example_png](https://raw.github.com/t3l3machus/toxssin/master/Screenshots/toxssin-1.png)
 ## Capabilities  
 By default, toxssin intercepts:
 - cookies (if HttpOnly not present),
