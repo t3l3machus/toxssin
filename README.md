@@ -27,8 +27,9 @@ By default, toxssin intercepts:
 - table data (static as well as updates),
 
 Most importantly, toxssin:
-- attempts to maintain XSS persistence while the user browses the website by intercepting server responses and re-writing the document,
+- attempts to maintain XSS persistence while the user browses the website by intercepting http requests & responses and re-writing the document,
 - supports session management, meaning that, you can use it to exploit reflected as well as stored XSS,
+- supports custom JS script execution against sessions,
 - automatically logs every session.
 
 ## Installation & Usage
