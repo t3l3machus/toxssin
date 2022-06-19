@@ -50,7 +50,7 @@ It is strongly recommended to run toxssin with a trusted certificate (see [How t
 ```
 
 ## XSS Exploitation Obstacles
-In my experience, there are 3 major obstacles when it comes to Cross-Site Scripting attacks attempting to include external JS scripts:
+In my experience, there are 4 major obstacles when it comes to Cross-Site Scripting attacks attempting to include external JS scripts:
 1. the "Mixed Content" error, which can be resolved by serving the JavaScript payload via https (even with a self-signed certificate).
 2. the "NET::ERR_CERT_AUTHORITY_INVALID" error, which indicates that the server's certificate is untrusted / expired and can be bypassed by using a certificate issued by a trusted Authority.
 3. Cross-origin resource sharing (CORS), which is handled appropriately by the toxssin server.
