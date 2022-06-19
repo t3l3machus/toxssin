@@ -6,7 +6,7 @@ toxssin is an open-source penetration testing tool that automates the process of
 
 This project started as (and still is) a research-based creative endeavor to explore the exploitability depth that an XSS vulnerability may introduce by using vanilla JavaScript, trusted certificates and cheap tricks.
 
-The project is quite fresh and has not been widely tested.  
+**Disclaimer**: The project is quite fresh and has not been widely tested.  
 ### Video Presentation  
 https://www.youtube.com/watch?v=i9osyuFK6ro
 
@@ -68,5 +68,7 @@ After you purchase a domain name, you can use certbot (Let's Encrypt) to get a t
 
 **Tip**: Don't install and run certbot on your own, you might get unexpected errors. Stick with the instructions.
 
+## Changelog
+`2022-06-19` - Added exec command (you can now execute custom JS script against a session).
 ## Future 
-The idea is to make it sharper, more reliable and expand its capabilities. Currently i am working on improving file captures and adding a user selected JS script execution feature.
+The idea is to make it sharper, more reliable and expand its capabilities. Currently, i'm working on improving file captures.
