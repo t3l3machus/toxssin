@@ -50,6 +50,7 @@ It is strongly recommended to run toxssin with a trusted certificate (see [How t
 ```
 # python3 toxssin.py -u https://your.domain.com -c /your/certificate.pem -k /your/privkey.pem
 ```
+Visit the project's [wiki](https://github.com/t3l3machus/toxssin/wiki) for additional information.
 
 ## XSS Exploitation Obstacles
 In my experience, there are 4 major obstacles when it comes to Cross-Site Scripting attacks attempting to include external JS scripts:
