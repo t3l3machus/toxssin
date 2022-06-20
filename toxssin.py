@@ -630,7 +630,7 @@ class Toxssin(BaseHTTPRequestHandler):
 
 
 		# Script exec results
-		elif self.path == '/7f47fd7ae404fa7c0448863ac3db9c85' and toxssin_id in Toxssin.execution_verified:
+		elif self.path == '/7f47fd7ae404fa7c0448863ac3db9c85' and toxssin_id in Toxssin.execution_verified  and self.headers.get('X-form-script') not in ['null', None]:
 
 			self.send_response(200)
 			self.send_header('Access-Control-Allow-Origin', '*')
