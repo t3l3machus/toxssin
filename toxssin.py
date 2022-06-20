@@ -4,7 +4,6 @@
 # https://github.com/t3l3machus
 
 from http.server import HTTPServer, BaseHTTPRequestHandler
-from http.cookies import SimpleCookie
 import ssl, sys, argparse, base64, re, os, readline
 from warnings import filterwarnings
 from subprocess import check_output
