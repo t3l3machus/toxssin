@@ -1,5 +1,5 @@
 # toxssin  
-[![Python 3.x](https://img.shields.io/badge/python-3.x-yellow.svg)](https://www.python.org/) <img src="https://img.shields.io/badge/vanilla-JavaScript-blue"> [![License](https://img.shields.io/badge/license-MIT-red.svg)](https://github.com/t3l3machus/toxssin/blob/main/LICENSE)
+[![Python 3.x](https://img.shields.io/badge/python-3.x-yellow.svg)](https://www.python.org/) <img src="https://img.shields.io/badge/vanilla-JavaScript-blue"> [![License](https://img.shields.io/badge/license-MIT-red.svg)](https://github.com/t3l3machus/toxssin/blob/main/LICENSE) [![Linux](https://svgshare.com/i/Zhy.svg)](https://svgshare.com/i/Zhy.svg)
 <img src="https://img.shields.io/badge/Maintained%3F-Yes-CD8335">
 ## Purpose
 
