@@ -769,15 +769,19 @@ def main():
 			
 			
 			elif cmd == 'exec':
-				script = cmd_list[1].replace("~", os.path.expanduser("~"))				
-				sid = Toxssin.active if cmd_list[2].lower() == 'active' else cmd_list[2]
+				script = cmd_list[1].replace("~", os.path.expanduser("~"))
+				
+				if Toxssin.active:
+					sid = Toxssin.active if cmd_list[2].lower() == 'active' else cmd_list[2]
 
-				if os.path.exists(script):
-					pair = {sid : script}
-					Toxssin.command_pool.append(pair)
-					print('\nScript appended for execution. Awaiting results.\n')
+					if os.path.exists(script):
+						pair = {sid : script}
+						Toxssin.command_pool.append(pair)
+						print('\nScript appended for execution. Awaiting results.\n')
+					else:
+						print('\nFile not found.\n')
 				else:
-					print('\nFile not found.\n')
+					print('\nNo sessions established ¯\_(ツ)_/¯\n')
 								
 									
 			elif cmd == 'flush':
