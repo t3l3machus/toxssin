@@ -72,6 +72,7 @@ After you purchase a domain name, you can use certbot (Let's Encrypt) to get a t
 **Tip**: Don't install and run certbot on your own, you might get unexpected errors. Stick with the instructions.
 
 ## Changelog
-`2022-06-19` - Added exec command (you can now execute custom JS script against a session).
+`2022-06-19` - Added the **exec** prompt command (you can now execute custom JS scripts against a session).  
+`2022-06-23` - I added two simple and dirty scripts as templates for testing the **exec** prompt command.
 ## Future 
 The idea is to make it sharper, more reliable and expand its capabilities. Currently, i'm working on improving file captures.
