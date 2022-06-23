@@ -768,7 +768,7 @@ def main():
 				os.system('clear')
 			
 			
-			elif cmd == 'exec':
+			elif cmd == 'exec' and len(cmd_list) == 3:
 				script = cmd_list[1].replace("~", os.path.expanduser("~"))
 				
 				if Toxssin.active:
@@ -791,7 +791,7 @@ def main():
 				print(f'\n{BOLD}All sessions deleted.{END}\n')
 
 
-			elif re.search('activate', cmd):
+			elif re.search('activate', cmd) and len(cmd_list) == 2:
 				sid = cmd_list[1]
 				if sid == Toxssin.active:
 					print(f'\n{RED}Already active.{END}\n')
@@ -814,7 +814,7 @@ def main():
 				pass
 				
 			else:
-				print('\nInvalid command.\n')
+				print(f'\n{RED}Invalid syntax.{END}\n')
 
 			#readline.clear_history()
 			
