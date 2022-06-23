@@ -281,7 +281,7 @@ $$$$"""$$$$$$$$$$uuu   uu$$$$$$$$$"""$$$"
 
 
 # -------------- Basic Settings -------------- #
-prompt = f"{ULINE}toxssin{END} > "
+prompt = "toxssin > "
 session_folder = {}
 msg_log = {}
 verbose = True if args.verbose else False
@@ -816,7 +816,7 @@ def main():
 			else:
 				print('\nInvalid command.\n')
 
-			readline.clear_history()
+			#readline.clear_history()
 			
 	except KeyboardInterrupt:
 		print(f'\n[{get_dt_prefix()[1]}] [{WARN}] {BOLD}Session terminated by user{END}.')
