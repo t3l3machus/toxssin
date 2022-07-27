@@ -37,7 +37,7 @@ Most importantly, toxssin:
 ```
 git clone https://github.com/t3l3machus/toxssin
 cd ./toxssin
-pip3 install -r requirements
+pip3 install -r requirements.txt
 ```  
 To start toxssin.py, you will need to supply ssl certificate and private key files.
 
