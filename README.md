@@ -62,9 +62,15 @@ In my experience, there are 4 major obstacles when it comes to Cross-Site Script
 **Note**: The "Mixed Content" error can of course occur when the target website is hosted via http and the JavaScript payload via https. This limits the scope of toxssin to https only webistes, as (by default) toxssin is started with ssl only.
 
 
-## How to get a Valid Certificate
-First, you need to own a domain name. The fastest and most economic way to get one (in my knowledge) is via a cheap domain registrar service (e.g.  https://www.namecheap.com/). Search for a random string domain name (e.g. "fvcm98duf") and check the less popular TLDs, like .xyz, as they will probably cost around 3$ per year.
+## How to get a Trusted Certificate
+First, you need to own a domain name. 
+### Register a domain for free
+You can search for free options on [freenom](https://my.freenom.com). It's a bit tricky to do it correctly. I suggest you follow this instructional [video](https://www.youtube.com/watch?v=3Uopc4AFjOY&t=324s). Also, if you create an account for the first time, make sure the Country you select matches your IP address or you might get errors. 
 
+### Standard (paid) method
+Purchase a domain from a registrar service (e.g.  https://www.namecheap.com/). The most economic way is to search for a random string domain name (e.g. "fvcm98duf") and check the less popular TLDs, like .xyz, as they will probably cost around 3$ per year.
+
+### Get a trusted certificate
 After you purchase a domain name, you can use certbot (Let's Encrypt) to get a trusted certificate in 5 minutes or less:
 1. Append an A record to your Domain's DNS settings so that it points to your server ip,
 2. Follow certbots [official instructions](https://certbot.eff.org/instructions).  
