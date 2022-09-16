@@ -63,7 +63,7 @@ parser = argparse.ArgumentParser()
 parser.add_argument("-u", "--url", action="store", help = "Your toxssin server URL (e.g., https://your.domain.com, https://127.0.0.1)", required = True)
 parser.add_argument("-c", "--certfile", action="store", help = "Your certificate.", required = True)
 parser.add_argument("-k", "--keyfile", action="store", help = "The private key for your certificate. ", required = True)
-parser.add_argument("-p", "--port", action="store", help = "Your toxssin server port (default: 443)", type = int) 
+parser.add_argument("-p", "--port", action="store", help = "Port number to start the local toxssin https server (default: 443). Careful! This option does not set the port in the payload or the malicious URLs generated on start up automatically. If you want to use a non-standard port both for the server and the URLs pointing to it, you must append it in the server URL as well (e.g., ./toxssin.py -u https://toxssin.com:9001 -p 9001 ...)", type = int) 
 parser.add_argument("-s", "--script-name", action="store", help = "Change JS handler script name (default: handler.js)", type=str)
 parser.add_argument("-e", "--elements", action="store", help = "Html elements to poison (default: input[type='text'], input[type='password'], input[type='date'], input[type='email'], input[type='datetime-local'], input[type='hidden'], input[type='number'], input[type='search'], input[type='url'], input[type='radio'], input[type='checkbox'], select, textarea)\n*Forms, tables and file inputs are poisoned by default.", type=str)
 parser.add_argument("-f", "--frequency", action="store", help = "Change html elements poisoning cycle frequency (default: 3000 ms)", type=int)
@@ -698,13 +698,15 @@ def main():
 		
 		
 		chill() if quiet else print_banner()
-		port = f':{server_port}' if server_port != 443 else ''
+		
+		s_url_list = toxssin_server_url.split(":")
+		handler_port = f':{s_url_list[2]}' if len(s_url_list) == 3 else ''
 			
-		print(f'[{get_dt_prefix()[1]}] [{INFO}] {BOLD}Provided domain handler URL{END}: {ORANGE}{toxssin_server_url}{port}/{handler}{END}')
+		print(f'[{get_dt_prefix()[1]}] [{INFO}] {BOLD}Provided domain handler URL{END}: {ORANGE}{toxssin_server_url}/{handler}{END}')
 		
 		try:
 			server_public_ip = check_output("curl --connect-timeout 3.14 -s ifconfig.me", shell = True).decode(sys.stdout.encoding)	
-			print(f'[{get_dt_prefix()[1]}] [{INFO}] {BOLD}Public IP handler URL{END}: {ORANGE}https://{server_public_ip}{port}/{handler}{END}')
+			print(f'[{get_dt_prefix()[1]}] [{INFO}] {BOLD}Public IP handler URL{END}: {ORANGE}https://{server_public_ip}{handler_port}/{handler}{END}')
 			
 		except:
 			pass
