@@ -19,18 +19,18 @@ Find more screenshots [here](Screenshots/).
 ## Capabilities  
 By default, toxssin intercepts:
 - cookies (if HttpOnly not present),
-- keystrokes,
+- keystrokes (technically, an active keylogger),
 - paste events,
 - input change events,
 - file selections,
 - form submissions,
-- server responses,
-- table data (static as well as updates),
+- server responses (to form submissions or clicking hyperlinks that target different pages and not internal parts of the same page),
+- table data (static as well as updates on tables after a page has finished loading),
 
 Most importantly, toxssin:
-- attempts to maintain XSS persistence while the user browses the website by intercepting http requests & responses and re-writing the document,
-- supports session management, meaning that, you can use it to exploit reflected as well as stored XSS,
-- supports custom JS script execution against sessions,
+- attempts to create XSS persistence while the user browses the website by intercepting http requests & responses and re-writing the document, creating the illusion of navigating when actually the document’s location never changes,
+- supports session management (you can use it to exploit multiple targets at the same time e.g., by running an XSS-based phishing campaign or exploiting stored XSS),
+- supports custom JS script execution against sessions (after a browser gets hooked, you can run custom JS scripts against it),
 - automatically logs every session.
 
 ## Installation & Usage
