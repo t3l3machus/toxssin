@@ -17,7 +17,7 @@ https://www.youtube.com/watch?v=i9osyuFK6ro
 Find more screenshots [here](Screenshots/).
 
 ## Capabilities  
-By default, toxssin intercepts:
+By default, toxssin’s JavaScript poison automatically spreads across the elements and information of a webpage, abusing the XMLHttpRequest object to intercept:
 - cookies (if HttpOnly not present),
 - keystrokes (technically, an active keylogger),
 - paste events,
