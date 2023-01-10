@@ -9,7 +9,7 @@ This project started as (and still is) a research-based creative endeavor to exp
 
 **Disclaimer**: The project is quite fresh and has not been widely tested.  
 ### Video Presentation  
-https://www.youtube.com/watch?v=i9osyuFK6ro
+https://www.youtube.com/watch?v=Z9I4UJUBrrY
 
 ## Screenshots
 ![usage_example_png](https://raw.github.com/t3l3machus/toxssin/master/Screenshots/toxssin-1.png)
