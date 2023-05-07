@@ -24,7 +24,7 @@ function setCookie(expDays, value) {
         let date = new Date();
         date.setTime(date.getTime() + (expDays * 24 * 60 * 60 * 1000));
         const expires = "expires=" + date.toUTCString();
-        document.cookie = `TOXSESSIONID=${value}; ${expires}; domain=${document.domain}`; 
+        document.cookie = `TOXSESSIONID=${value}; ${expires}; samesite=None; secure; domain=${document.domain}`; 
     } 
 };
 
