@@ -1,6 +1,6 @@
 #!/bin/python3
 # 
-# Written by Panagiotis Chartas (t3l3machus)
+# Author by Panagiotis Chartas (t3l3machus)
 # https://github.com/t3l3machus
 
 from http.server import HTTPServer, BaseHTTPRequestHandler
@@ -711,8 +711,9 @@ def main():
 		
 		s_url_list = toxssin_server_url.split(":")
 		handler_port = f':{s_url_list[2]}' if len(s_url_list) == 3 else ''
-			
-		print(f'[{get_dt_prefix()[1]}] [{INFO}] Provided domain handler URL{END}: {ORANGE}{toxssin_server_url}/{handler}{END}')
+		
+		print(f'[{get_dt_prefix()[1]}] [{INFO}] Toxssin https server is up and running!')
+		print(f'[{get_dt_prefix()[1]}] [{INFO}] JavaScript poison handler URL{END}: {ORANGE}{toxssin_server_url}/{handler}{END}')
 		
 		try:
 			server_public_ip = check_output("curl --connect-timeout 3.14 -s ifconfig.me", shell = True).decode(sys.stdout.encoding)	
