@@ -7,7 +7,8 @@ toxssin is an open-source penetration testing tool that automates the process of
 
 This project started as (and still is) a research-based creative endeavor to explore the exploitability depth that an XSS vulnerability may introduce by using vanilla JavaScript, trusted certificates and cheap tricks.
 
-**Disclaimer**: The project is quite fresh and has not been widely tested.  
+**Disclaimer**: Using this tool against web apps that you do not have explicit permission to test is illegal. You are responsible for any trouble you may cause by using this tool.  
+
 ### Video Presentation  
 https://www.youtube.com/watch?v=Z9I4UJUBrrY
 
@@ -32,6 +33,7 @@ Most importantly, toxssin:
 - supports session management (you can use it to exploit multiple targets at the same time e.g., by running an XSS-based phishing campaign or exploiting stored XSS),
 - supports custom JS script execution against sessions (after a browser gets hooked, you can run custom JS scripts against it),
 - automatically logs every session.
+
 
 ## Installation & Usage
 ```
