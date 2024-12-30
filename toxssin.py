@@ -1,6 +1,6 @@
 #!/bin/python3
 # 
-# Author by Panagiotis Chartas (t3l3machus)
+# Author: Panagiotis Chartas (t3l3machus)
 # https://github.com/t3l3machus
 
 from http.server import HTTPServer, BaseHTTPRequestHandler
