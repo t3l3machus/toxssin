@@ -697,11 +697,13 @@ def main():
 			
 		except OSError:	
 			exit(f'\n[{FAILED}] - {BOLD}Port {server_port} seems to already be in use.{END}\n')
-
-		context = ssl.SSLContext(ssl.PROTOCOL_TLS_SERVER)
-		context.load_cert_chain(certfile = args.certfile, keyfile = args.keyfile)
-		httpd.socket = context.wrap_socket(sock = httpd.socket, server_side= True)
-		
+		try:
+			context = ssl.SSLContext(ssl.PROTOCOL_TLS_SERVER)
+			context.load_cert_chain(certfile = args.certfile, keyfile = args.keyfile)
+			httpd.socket = context.wrap_socket(sock = httpd.socket, server_side= True)
+		except FileNotFoundError:
+			exit(f'\n[{FAILED}] Certificate or key file not found. Check your input and try again.\n')
+			
 		chill() if quiet else print_banner()
 		
 		s_url_list = toxssin_server_url.split(":")
