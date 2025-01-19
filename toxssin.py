@@ -760,11 +760,11 @@ def main():
 					print(f'{BOLD}Total{END}: {len(Toxssin.victims.keys())}\n')
 					print(f'{BOLD}----------------------------------------------------------{END}\n')
 				else:
-					print('\nNo sessions established ¯\_(ツ)_/¯\n')
+					print('\nNo sessions established ¯\\_(ツ)_/¯\n')
 					
 					
 			elif cmd == 'active':
-				print(f'\n{BOLD}Session id{END}: {Toxssin.active}\n{BOLD}Data{END}: {Toxssin.victims[Toxssin.active]}\n') if Toxssin.active else print('\nNo sessions established ¯\_(ツ)_/¯\n')
+				print(f'\n{BOLD}Session id{END}: {Toxssin.active}\n{BOLD}Data{END}: {Toxssin.victims[Toxssin.active]}\n') if Toxssin.active else print('\nNo sessions established ¯\\_(ツ)_/¯\n')
 
 
 			elif cmd == 'verbose':
@@ -789,7 +789,7 @@ def main():
 					else:
 						print('\nFile not found.\n')
 				else:
-					print('\nNo sessions established ¯\_(ツ)_/¯\n')
+					print('\nNo sessions established ¯\\_(ツ)_/¯\n')
 								
 									
 			elif cmd == 'flush':
