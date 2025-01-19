@@ -698,14 +698,9 @@ def main():
 		except OSError:	
 			exit(f'\n[{FAILED}] - {BOLD}Port {server_port} seems to already be in use.{END}\n')
 
-		httpd.socket = ssl.wrap_socket (
-			httpd.socket, 
-			keyfile = args.keyfile , 
-			certfile = args.certfile , 
-			server_side = True, 
-			ssl_version=ssl.PROTOCOL_TLS
-		)
-		
+		context = ssl.SSLContext(ssl.PROTOCOL_TLS_SERVER)
+		context.load_cert_chain(certfile = args.certfile, keyfile = args.keyfile)
+		httpd.socket = context.wrap_socket(sock = httpd.socket, server_side= True)
 		
 		chill() if quiet else print_banner()
 		
