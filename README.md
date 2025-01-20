@@ -61,7 +61,7 @@ In my experience, there are 4 major obstacles when it comes to Cross-Site Script
 3. Cross-origin resource sharing (CORS), which is handled appropriately by the toxssin server.
 4. `Content-Security-Policy` header with the `script-src` set to specific domain(s) only will block scripts with cross-domain src from loading. Toxssin relies on the `eval()` function to deliver its poison, so, if the website has a CSP and the `unsafe-eval` source expression is not specified in the `script-src` directive, the attack will most likely fail (i'm working on a second poison delivery method to work around this). 
 
-**Note**: The "Mixed Content" error can of course occur when the target website is hosted via http and the JavaScript payload via https. This limits the scope of toxssin to https only webistes, as (by default) toxssin is started with ssl only.
+**Note**: The "Mixed Content" error can of course occur when the target website is hosted via http and the JavaScript payload via https. This limits the scope of toxssin to https only websites, as (by default) toxssin is started with ssl only.
 
 
 ## How to get a Trusted Certificate
